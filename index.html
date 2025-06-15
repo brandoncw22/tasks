@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Page Title</title>
+            <link rel="stylesheet" href="styles.css">
+        </head>
+        <body>
+            <h1 id="pageTitle">Brandon's tasks</h1>
+            <div id="header">
+                <div id="taskEntry">
+                    <form>
+                        <input class="taskInput" type="text" id="taskName" name="taskName" placeholder="Title"/>
+                        <input class="taskInput" type="text" id="taskDesc" name="taskDesc" placeholder="Description"/>
+                        <input class="taskInput" type="date" id="taskDate" name="taskDate"/>
+                        <input class="taskInput" type="time" id="taskTime" name="taskTime"/>
+                        <select class="taskInput" id="taskPriority">
+                            <option value="1">Low</option>
+                            <option value="2">Medium</option>
+                            <option value="3">High</option>
+                        </select>
+                        <button class="taskInput" id="taskAdd">+</button>
+                    </form>
+                </div>
+                <div id="filterBar">
+                    <label for="filter">Show completed?</label>
+                <input type="checkbox" id="filter">
+            </div>
+            </div>
+            
+            
+            <div id="taskDisplay">
+                <div class="task" id="task1">
+                    <div class="taskHeader" id="task1_Header">
+                        <h1 class="taskTitle" id="task1_Title">Example Task</h1>
+                        <input class="taskComplete" type="checkbox" id="task1_Complete" name="taskComplete"/>
+                    </div>
+                    <div class="taskBody" id="task1_Body">
+                        <hr>
+                        <h2 class="taskBodyElements" id="task1_Due">Due 6/11/2025 @ 12:00am</h2>
+                        <p class="taskBodyElements" id="task1_Desc">Example Description</p>
+
+                    </div>
+                </div>
+            </div>
+            <script src="script.js"></script>
+        </body>
+    </html>
