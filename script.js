@@ -1,16 +1,18 @@
 
 //Object arrays that hold tasks, and completed tasks
 const tasks = [];
-const completedTasks = [];
-const filters = [
-    {
-        filter: showCompleted,
-        on: false
-    }
-];
+//const completedTasks = [];
+
+//Filters for the task display
+const filters = {
+    completed: false,
+    hightolow: false,
+    lowtohigh: false,
+    overdue: false,
+};
 const taskDisplay = document.getElementById("taskDisplay");
 const addButton = document.getElementById("taskAdd");
-const completedBox = document.getElementById("filter");
+const filterCompleted = document.getElementById("filterCompleted");
 
 //Loading local storage
 const taskData = localStorage.getItem('tasks');
@@ -20,11 +22,11 @@ if (taskData) {
     tasks.push(...package);
     console.log("tasks loaded");
 }
-if (archivedData) {
+/*if (archivedData) {
     const package = JSON.parse(archivedData);
     completedTasks.push(...package);
     console.log("completed loaded");
-}
+}*/
 
 //initial render
 renderTasks();
@@ -34,15 +36,12 @@ addButton.addEventListener("click", (e) => {
     createTask();
 });
 
-filterChecked.addEventListener("change", () => {
-    if (!this.checked) {
-        const flag = filters[0].on = false;
-        renderTasks(flag);
-    } else {
-
-    }
+filterCompleted.addEventListener("change", function () {
+    filters.completed = this.checked;
+    renderTasks();
 });
 
+//Creates task object and assigns values to its attributes based on input values
 function createTask(){
     const count = tasks.length + 1;
     const taskName = document.getElementById("taskName").value.trim();
@@ -59,7 +58,7 @@ function createTask(){
         date: taskDate,
         time: taskTime,
         priority: taskPriority,
-        completed: ''
+        completed: false
     };
 
     tasks.push(task);
@@ -72,10 +71,14 @@ function createTask(){
 
 
 }
-function renderTasks(flag){
+function renderTasks(){
     taskDisplay.innerHTML = "";
-    
-    tasks.forEach((task) => {
+
+    const filteredTasks = checkFilters(tasks);
+
+    console.log("Tasks have been filtered.");
+
+    filteredTasks.forEach((task) => {
         //Creating task card
         const taskCard = document.createElement("div");
         taskCard.className = "task";
@@ -97,6 +100,7 @@ function renderTasks(flag){
         checkBox.className = "taskComplete";
         checkBox.id = `task${task.id}_Complete`;
         checkBox.type = "checkbox";
+        checkBox.checked = task.completed;
 
         //Append Title and Checkbox to card header
         taskHeader.appendChild(taskTitle);
@@ -105,7 +109,6 @@ function renderTasks(flag){
         //Append header to card
         taskCard.appendChild(taskHeader);
         
-
         //Task body
         const taskBody = document.createElement("div");
         taskBody.className = "taskBody";
@@ -135,13 +138,18 @@ function renderTasks(flag){
         taskCard.appendChild(taskBody);
 
         //Task priority will change card color
-        if (task.priority == 1){
-            taskCard.style.backgroundColor= "rgb(84, 248, 90)";
-        } if (task.priority == 2) {
-            taskCard.style.backgroundColor= "rgb(255, 229, 30)";
-        } if (task.priority == 3) {
-            taskCard.style.backgroundColor= "rgb(251, 128, 94)";
+        if (!task.completed) {
+            if (task.priority == 1){
+                taskCard.style.backgroundColor= "rgb(84, 248, 90)";
+            } if (task.priority == 2) {
+                taskCard.style.backgroundColor= "rgb(255, 229, 30)";
+            } if (task.priority == 3) {
+                taskCard.style.backgroundColor= "rgb(251, 128, 94)";
+            }
+        } else {
+            taskCard.style.backgroundColor= "rgb(207, 207, 207)";
         }
+        
 
         //Append new task
         taskDisplay.appendChild(taskCard);
@@ -161,55 +169,62 @@ function completeTask (box) {
     if (taskIndex === -1) return;
 
     const task = tasks[taskIndex];
-    tasks.splice(taskIndex, 1);
+    task.completed = true;
 
-    completedTasks.push(task);
+    console.log(task.completed);
 
-    const archivedData = JSON.stringify(completedTasks, null, 2);
-    localStorage.setItem('completedTasks', archivedData);
     const taskData = JSON.stringify(tasks, null, 2);
     localStorage.setItem('tasks', taskData);
 
     renderTasks();
 }
-
-function renewTask () {
+//Renews a task and marks complete as false
+function renewTask (box) {
     const boxID = box.id;
+    //Gets only the number from the checkbox id attribute
     const taskID = boxID.match(/\d+/)[0];;
 
-    const taskIndex = searchTask(completedTasks, taskID);
+    const taskIndex = searchTask(tasks, taskID);
     if (taskIndex === -1) return;
 
-    const task = completedTasks[taskIndex];
-    completedTasks.splice(taskIndex, 1);
+    const task = tasks[taskIndex];
+    task.completed = false;
 
-    tasks.push(task);
-
-    const archivedData = JSON.stringify(completedTasks, null, 2);
-    localStorage.setItem('completedTasks', archivedData);
     const taskData = JSON.stringify(tasks, null, 2);
     localStorage.setItem('tasks', taskData);
 
     renderTasks();
 }
-
+//Searches for task by task ID gathered from HTMl elements
 function searchTask (array, searchID) {
     return array.findIndex(task => task.id == searchID);
 }
+
+//Attaches listeners to the individual task card checkboxes
 function attachBoxListeners (){
     const completionBox = document.getElementsByClassName("taskComplete");
     for (let box of completionBox){
         box.addEventListener("change", () => {
+            //Complete a task
             if (box.checked){
                 completeTask(box);
                 console.log("Box is checked");
+            //Renew a task
             } else {
                 renewTask(box);
                 console.log("Box is unchecked");
             }
         
-    });
+        });
+    }
 }
+//Checks the filters during rendering of tasks
+function checkFilters (tasks) {
+    return tasks.filter((task) => {
+        // If 'completed' filter is ON, show both completed and uncompleted
+        // If 'completed' filter is OFF, show only uncompleted
+        return filters.completed || !task.completed;
+    });
 }
 
 //Adds am or pm
