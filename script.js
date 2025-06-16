@@ -71,6 +71,24 @@ function createTask(){
 
 
 }
+
+function deleteTask (btn) {
+    const btnID = btn.id;
+    const taskID = btnID.match(/\d+/)[0];;
+
+    const taskIndex = searchTask(tasks, taskID);
+    if (taskIndex === -1) return;
+
+    tasks.splice(taskIndex, 1);
+
+    console.log("task deleted");
+
+    const taskData = JSON.stringify(tasks, null, 2);
+    localStorage.setItem('tasks', taskData);
+
+    renderTasks();
+}
+
 function renderTasks(){
     taskDisplay.innerHTML = "";
 
@@ -83,6 +101,20 @@ function renderTasks(){
         const taskCard = document.createElement("div");
         taskCard.className = "task";
         taskCard.id = `task${task.id}`;
+
+        //Add settings bar
+        const taskSettings = document.createElement("div");
+        taskSettings.className = "taskSettings";
+        taskSettings.id = `task${task.id}_settings`;
+
+        //Add delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "deleteBtn";
+        deleteBtn.id = `task${task.id}_deleteBtn`;
+        deleteBtn.innerHTML = 'X';
+
+        //Append delete button
+        taskSettings.appendChild(deleteBtn);
 
         //Adding the card header
         const taskHeader = document.createElement("div");
@@ -105,7 +137,10 @@ function renderTasks(){
         //Append Title and Checkbox to card header
         taskHeader.appendChild(taskTitle);
         taskHeader.appendChild(checkBox);
-    
+
+        //Append setting to card
+        taskCard.appendChild(taskSettings);
+
         //Append header to card
         taskCard.appendChild(taskHeader);
         
@@ -156,7 +191,7 @@ function renderTasks(){
 
         console.log("Tasks rendered.");
 
-        attachBoxListeners();
+        attachListeners();
         console.log("Box listeners added");
     });
 
@@ -201,8 +236,9 @@ function searchTask (array, searchID) {
 }
 
 //Attaches listeners to the individual task card checkboxes
-function attachBoxListeners (){
+function attachListeners (){
     const completionBox = document.getElementsByClassName("taskComplete");
+    const deleteBtn = document.getElementsByClassName("deleteBtn");
     for (let box of completionBox){
         box.addEventListener("change", () => {
             //Complete a task
@@ -215,6 +251,12 @@ function attachBoxListeners (){
                 console.log("Box is unchecked");
             }
         
+        });
+    }
+    for (let btn of deleteBtn){
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            deleteTask(btn);
         });
     }
 }

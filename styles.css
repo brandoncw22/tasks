@@ -52,6 +52,25 @@
     margin-left: 10px;
     margin-bottom: 10px;
 }
+.taskSettings {
+    display: flex;
+    flex-direction: row-reverse;
+}
+.deleteBtn{
+    background-color: transparent;
+    font-weight: bold;
+    font-size: 18px;
+    border: 0px solid transparent;
+    transition: all 0.1s ease-in-out;
+}
+.deleteBtn:hover {
+    color: rgb(255, 117, 117);
+    text-shadow: 
+        -1px -1px 0 rgb(0, 0, 0),
+        1px -1px 0 rgb(0, 0, 0),
+        -1px 1px 0 rgb(0, 0, 0),
+        1px 1px 0 rgb(0, 0, 0);
+}
 .taskHeader{
     display: flex;
     justify-content: center;
