@@ -1,6 +1,6 @@
-
 //Object arrays that hold tasks, and completed tasks
 const tasks = [];
+let sCount = 0;
 //const completedTasks = [];
 
 //Filters for the task display
@@ -10,13 +10,15 @@ const filters = {
     lowtohigh: false,
     overdue: false,
 };
+
 const taskDisplay = document.getElementById("taskDisplay");
+const subTaskList = document.getElementById("subTaskList");
 const addButton = document.getElementById("taskAdd");
+const subTaskAdd = document.getElementById("subTaskAdd");
 const filterCompleted = document.getElementById("filterCompleted");
 
 //Loading local storage
 const taskData = localStorage.getItem('tasks');
-const archivedData = localStorage.getItem('completedTasks')
 if (taskData) {
     const package = JSON.parse(taskData);
     tasks.push(...package);
@@ -41,6 +43,12 @@ filterCompleted.addEventListener("change", function () {
     renderTasks();
 });
 
+subTaskAdd.addEventListener("click", (e) =>{
+    e.preventDefault();
+    addSubTaskInput();
+});
+
+
 //Creates task object and assigns values to its attributes based on input values
 function createTask(){
     const count = tasks.length + 1;
@@ -58,6 +66,7 @@ function createTask(){
         date: taskDate,
         time: taskTime,
         priority: taskPriority,
+        subtasks: {},
         completed: false
     };
 
@@ -196,6 +205,7 @@ function renderTasks(){
     });
 
 }
+
 function completeTask (box) {
     const boxID = box.id;
     const taskID = boxID.match(/\d+/)[0];;
@@ -230,6 +240,39 @@ function renewTask (box) {
 
     renderTasks();
 }
+
+function addSubTaskInput () {
+
+    sCount++;
+
+    const newInput = document.createElement("div");
+    newInput.className = "subTaskInput";
+    newInput.id = `subTask${sCount}_Input`;
+
+    const listItem = document.createElement("li");
+    const taskForm = document.createElement("form");
+    taskForm.className = "taskForm";
+    taskForm.id = `taskForm${sCount}`;
+
+    const taskTitle = document.createElement("input");
+    taskTitle.className = "subTaskTitleInput";
+    taskTitle.id = `subTask${sCount}_TitleInput`;
+    taskTitle.type = "text";
+    taskTitle.placeholder = "Title";
+
+    taskForm.appendChild(taskTitle);
+
+    const taskDesc = document.createElement("input");
+    taskDesc.className = "subTaskDescInput";
+    taskDesc.id = `subTask${sCount}_DescInput`;
+    taskDesc.type = "text";
+    taskDesc.placeholder = "Description";
+
+    taskForm.appendChild(taskDesc);
+
+    subTaskEntry.appendChild();
+}
+
 //Searches for task by task ID gathered from HTMl elements
 function searchTask (array, searchID) {
     return array.findIndex(task => task.id == searchID);
