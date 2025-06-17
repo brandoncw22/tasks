@@ -57,8 +57,17 @@ function createTask(){
     const taskDate = document.getElementById("taskDate").value.trim();
     const taskTime = document.getElementById("taskTime").value.trim();
     const taskPriority = document.getElementById("taskPriority").value.trim();
+    const subTasks = [];
 
-    
+    for(let i = 1; i <= sCount; i++) {
+        const sTaskTitle = document.getElementById(`subTask${i}_TitleInput`).value.trim();
+        const sTaskDesc = document.getElementById(`subTask${i}_DescInput`).value.trim();
+
+        const subTask = {id: i, title: sTaskTitle, desc: sTaskDesc};
+
+        subTasks.push(subTask);
+    }
+
     let task = {
         id: count,
         title: taskName,
@@ -66,7 +75,7 @@ function createTask(){
         date: taskDate,
         time: taskTime,
         priority: taskPriority,
-        subtasks: {},
+        subTasks: subTasks,
         completed: false
     };
 
@@ -77,6 +86,8 @@ function createTask(){
     localStorage.setItem('tasks', taskData);
 
     renderTasks();
+
+    subTaskList.innerHTML = "";
 
 
 }
@@ -168,27 +179,73 @@ function renderTasks(){
         taskDue.id = `task${task.id}_Due`;
         taskDue.innerHTML = `Due ${task.date} @ ${formatTimeTo12Hour(task.time)}`;
 
-        //Task Description
+        //Task Descriptions
         const taskDesc = document.createElement("p");
         taskDesc.className = "taskBodyElements";
         taskDesc.id = `task${task.id}_Desc`;
         taskDesc.innerHTML = `${task.desc}`;
 
+
         //Append elements to task body
         taskBody.appendChild(taskDue);
         taskBody.appendChild(taskDesc);
 
-        //Append taskBody to taskCard
         taskCard.appendChild(taskBody);
+
+        //SubTask Body
+        const subTaskBody = document.createElement("div");
+        subTaskBody.className = "sTaskBody";
+        subTaskBody.id = `task${task.id}_sTaskBody`;
+
+        taskBody.appendChild(line);
+
+        //Sub task list
+        const subTaskList = document.createElement("ul");
+        subTaskList.className = "sTaskList";
+        subTaskList.id = `task${task.id}_sTaskList`;
+
+        const list = task.subTasks;
+
+        list.forEach((subTask) => {
+            const listItem = document.createElement("li");
+            listItem.className = "sListItem";
+            listItem.id = `task${task.id}_sTask${subTask.id}`;
+
+            const sCompleteBox = document.createElement("input");
+            sCompleteBox.type = "checkbox";
+            sCompleteBox.className = "sCompleteBox";
+            sCompleteBox.id = `task${task.id}_sCompleteBox${subTask.id}`;
+
+            const sTitle = document.createElement("h4");
+            sTitle.className = "sTitle";
+            sTitle.id = `task${task.id}_sTitle${subTask.id}`;
+            sTitle.innerHTML = `${subTask.title}: `;
+
+            const sDesc = document.createElement("h6");
+            sDesc.className = "sDesc";
+            sDesc.id = `task${task.id}_sDesc${subTask.id}`;
+            sDesc.innerHTML = `${subTask.desc}`;
+
+            listItem.appendChild(sCompleteBox);
+            listItem.appendChild(sTitle);
+            listItem.appendChild(sDesc);
+
+            subTaskList.appendChild(listItem);
+        });
+
+        subTaskBody.appendChild(subTaskList);
+
+        taskCard.appendChild(taskBody);
+        taskCard.appendChild(subTaskBody);
 
         //Task priority will change card color
         if (!task.completed) {
             if (task.priority == 1){
-                taskCard.style.backgroundColor= "rgb(84, 248, 90)";
+                taskCard.style.backgroundColor= "rgb(148, 250, 152)";
             } if (task.priority == 2) {
-                taskCard.style.backgroundColor= "rgb(255, 229, 30)";
+                taskCard.style.backgroundColor= "rgb(250, 235, 125)";
             } if (task.priority == 3) {
-                taskCard.style.backgroundColor= "rgb(251, 128, 94)";
+                taskCard.style.backgroundColor= "rgb(255, 124, 124)";
             }
         } else {
             taskCard.style.backgroundColor= "rgb(207, 207, 207)";
@@ -250,6 +307,9 @@ function addSubTaskInput () {
     newInput.id = `subTask${sCount}_Input`;
 
     const listItem = document.createElement("li");
+    listItem.className = "listItem";
+    listItem.id = `listItem${sCount}`;
+
     const taskForm = document.createElement("form");
     taskForm.className = "taskForm";
     taskForm.id = `taskForm${sCount}`;
@@ -270,7 +330,8 @@ function addSubTaskInput () {
 
     taskForm.appendChild(taskDesc);
 
-    subTaskEntry.appendChild();
+    listItem.appendChild(taskForm);
+    subTaskList.appendChild(listItem);
 }
 
 //Searches for task by task ID gathered from HTMl elements

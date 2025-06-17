@@ -29,6 +29,13 @@
     display:flex;
     flex-direction: column-reverse;
 }
+#subTaskAdd {
+    width: 120px;
+}
+.listItem input{
+    margin: 5px;
+    
+}
 .taskInput{
     margin-left: 10px;
 }
@@ -55,10 +62,12 @@
 .task{
     padding: 10px;
     max-width: 512px;
+    max-height: fit-content;
     border: 1px solid black;
     border-radius: 5px;
     margin-left: 10px;
     margin-bottom: 10px;
+    transition: all 0.2 ease-in-out;
 }
 .taskSettings {
     display: flex;
@@ -89,6 +98,18 @@
 }
 .taskBody h2{
     font-size: 24px;
+}
+.sTaskBody {
+    max-height: 100px;
+    overflow: scroll;
+    transition: all 0.2s ease-in-out;
+}
+.sListItem {
+    display: flex;
+}
+
+.sListItem input, h4, h6{
+    margin-right: 5px;
 }
 .taskTitle {
     margin-left: 15px;
